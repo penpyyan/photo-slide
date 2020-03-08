@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>my-photoes-slide</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      border: 0;
+    }
+    .container {
+      width: 500px;
+      height: 375px;
+      overflow: hidden;
+      position: relative;
+    }
+    .container #list {
+      position: absolute;
+      width: 3500px
+      /*transition: left 2s*/
+    }
+    .container #list .photo {
+      width: 500px;
+      float: left;
+    }
+    .container .arrow {
+      background: rgb(0, 0, 0, 0.3);
+      width: 50px;
+      height: 75px;
+      font-size: 30px;
+      color: #ddd;
+      text-align: center;
+      line-height: 75px;
+      z-index: 1;
+      display: none;
+    }
+    .container:hover .arrow {
+      display: block;
+    }
+    .container .arrow:hover {
+      background: rgb(0, 0, 0, 0.7);
+    }
+    .container #prev {
+      position: absolute;
+      left: 20px;
+      top: 150px;
+      
+    }
+    .container #next {
+      position: absolute;
+      right: 20px;
+      top: 150px;
+    }
+    .container #button {
+      /*width: 100px;*/
+      /*height: 18px;*/
+      /*box-sizing: border-box;*/
+      border-radius: 5px;
+      background: rgb(0, 0, 0, 0.6);
+      position: absolute;
+      bottom: 10px;
+      right: 200px;
+      padding: 0px 5px;
+    }
+    .container #button span {
+      float: left;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #fff;
+      margin: 2px 5px 2px 0px;
+    }
+    .container #button span:first-child {
+      margin-left: 5px;
+    }
+    .container #button .on {
+      background-color: orange;
+    }
+  </style>
+  <script>
+    window.onload = function () {
+      // var list = document.getElementsByClassName('list')[0]
+      var list = document.getElementById('list')
+      var prev = document.getElementById('prev')
+      var next = document.getElementById('next')
+      var nodes = document.getElementsByTagName('span')
+      var container = document.getElementsByClassName('container')[0]
+      // console.log(nodes)
+      var index = 0
+      var timer
+
+      function slide(offSet) {
+        let newLeft = parseInt(list.style.left) + offSet //目标
+        // console.log(newLeft)
+        //分段滑动，实现渐变过程
+        let times = 25 //分为几段滑动
+        let interval = offSet / times //每次滑动要向左/右移动
+        function continuous() {
+          if ((interval>0 && parseInt(list.style.left)<newLeft) || (interval<0 && parseInt(list.style.left)>newLeft)) {
+            list.style.left = parseInt(list.style.left) + interval +'px'
+            setTimeout(continuous, 10)
+          } else {
+            // list.style.left = newLeft + 'px'
+            if (newLeft > -500) {
+              list.style.left = -2500 + 'px'
+            }
+            if (newLeft < -2500) {
+              list.style.left = '-500px'
+            }
+          }
+        }
+        continuous();
+      }
+      function showButton(index) {
+        // var index = ind || (Math.abs(parseInt(list.style.left)) / 500)
+        nodes[index].className = 'on'
+        // console.log(index)
+        for (let i = 0; i < nodes.length; i++) {
+          if (i !== index) {
+            nodes[i].className = ''
+          }
+        }
+       }
+       //自动滑动，相当于每隔一段时间点击一次next
+       function autoSlide() {
+        timer = setInterval(next.onclick, 2000)
+       }
+
+       function stop() {
+        clearInterval(timer)
+       }
+
+      prev.onclick = function() {
+        if (index > 0) {
+          index--
+        } else {
+          index = nodes.length-1
+        }
+        slide(500)
+        showButton(index)
+      }
+      next.onclick = function() {
+        if (index < nodes.length-1) {
+          index++
+        } else {
+          index = 0
+        }
+        slide(-500)
+        showButton(index)
+      }
+      for (let i = 0; i < nodes.length; i++) {
+        nodes[i].onclick = function() {
+          index = i
+          showButton(i)
+          list.style.left = -(i + 1) * 500 + 'px'
+        }
+      }
+      container.onmouseover = stop
+      container.onmouseout = autoSlide
+      autoSlide();
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div id="list" style="left: -500px;">
+      <img class="photo" src="./imgs/5.jpg" alt="photo5">
+      <img class="photo" src="./imgs/1.jpg" alt="photo1">
+      <img class="photo" src="./imgs/2.jpg" alt="photo2">
+      <img class="photo" src="./imgs/3.jpg" alt="photo3">
+      <img class="photo" src="./imgs/4.jpg" alt="photo4">
+      <img class="photo" src="./imgs/5.jpg" alt="photo5">
+      <img class="photo" src="./imgs/1.jpg" alt="photo1">
+    </div>
+    <div id="button">
+<!--       <div class="node"></div>
+      <div class="node"></div>
+      <div class="node"></div>
+      <div class="node"></div>
+      <div class="node"></div> -->
+      <span class="on"></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="arrow" id="prev"><</div>
+    <div class="arrow" id="next">></div>
+  </div>
+</body>
+</html>
